@@ -1,23 +1,63 @@
 module SandDollar::SessionToken
   module Base
-    TTL = SandDollar.configuration.session_lifetime
 
-    # def self.included(base)
-    #   base.class_eval do
-    #     attr_reader :token
-    #   end
-    # end
+    def self.included(base)
+      base.class_eval do
+        base.extend ClassMethods
+      end
+    end
+
+
+    ##############################
+    ## CLASS METHODS            ##
+    ##############################
+
+    module ClassMethods
+      def session_lifetime
+        SandDollar.configuration.session_lifetime
+      end
+    end
+
+
+    ##############################
+    ## ATTR ACCESSORS           ##
+    ##############################
+
+    module AttrAccessors
+      def token
+        @token
+      end
+
+      def updated_at
+        @updated_at
+      end
+    end
+
 
     ##############################
     ## INSTANCE METHODS         ##
     ##############################
 
-    # def initialize(params = {})
-    #   set_token
-    # end
+    def initialize(*args)
+      self.send(:before_initialize, *args) if self.respond_to?(:before_initialize)
+      ret = super
+      self.send(:after_initialize, *args) if self.respond_to?(:after_initialize)
+      ret
+    end
+
+    def before_initialize(*args)
+      nil
+    end
+
+    def after_initialize(*args)
+      # Extend instance here to reduce conflicts with ActiveRecord/Mongoid
+      # and potentially other libraries
+      self.extend(AttrAccessors)
+      set_token
+    end
 
     def ttl
-      updated_at + TTL - Time.now
+      updated_at + self.class.session_lifetime - Time.now
     end
 
     def expired?
@@ -28,10 +68,17 @@ module SandDollar::SessionToken
       !expired?
     end
 
+    def keep_alive
+      @updated_at = Time.now
+      self
+    end
+
     protected
 
     def set_token
       @token = generate_token
+      @updated_at = Time.now
+      self
     end
 
     # protected

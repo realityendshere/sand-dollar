@@ -1,19 +1,18 @@
 module SandDollar::SessionToken
   module Mongoid
-    TTL = SandDollar.configuration.session_lifetime
 
     def self.included(base)
       base.class_eval do
-        include SandDollar::SessionToken::Base
+        base.include SandDollar::SessionToken::Base
         base.extend ClassMethods
-        base.include( InstanceMethods )
+        base.include InstanceMethods
 
         ##############################
         ## INDEXES                  ##
         ##############################
 
         index({ token: 1 }, { unique: true, name: "sand_dollar_token_index" })
-        index({ updated_at: 1 }, { expire_after_seconds: TTL })
+        index({ updated_at: 1 }, { expire_after_seconds: session_lifetime })
 
         ##############################
         ## RELATIONSHIPS            ##
@@ -34,15 +33,9 @@ module SandDollar::SessionToken
 
         scope :alive, -> () {
           all_of(
-            {"updated_at" => {'$gte' => Time.now - TTL}}
+            {"updated_at" => {'$gte' => Time.now - session_lifetime}}
           )
         }
-
-        # ##############################
-        # ## CALLBACKS                ##
-        # ##############################
-
-        before_create :set_token
       end
     end
 
@@ -62,6 +55,14 @@ module SandDollar::SessionToken
     ##############################
 
     module InstanceMethods
+
+      def after_initialize(*args)
+        set_token
+      end
+
+      def keep_alive
+        self.touch
+      end
 
       protected
 
