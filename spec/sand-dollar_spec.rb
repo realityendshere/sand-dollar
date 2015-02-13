@@ -2,12 +2,12 @@ require 'spec_helper'
 
 describe SandDollar::Configuration do
   describe "default config" do
-    it "has a session_lifetime of 1200" do
-      expect(SandDollar.configuration.session_lifetime).to eq(1200)
+    it "has a session_lifetime of #{SandDollar::Default::SESSION_LIFETIME}" do
+      expect(SandDollar.configuration.session_lifetime).to eq(SandDollar::Default::SESSION_LIFETIME)
     end
 
-    it "has a token_length of 128" do
-      expect(SandDollar.configuration.token_length).to eq(128)
+    it "has a token_length of #{SandDollar::Default::TOKEN_LENGTH}" do
+      expect(SandDollar.configuration.token_length).to eq(SandDollar::Default::TOKEN_LENGTH)
     end
   end
 
@@ -20,11 +20,11 @@ describe SandDollar::Configuration do
     end
 
     it "configures the session_lifetime" do
-      expect(SandDollar.configuration.session_lifetime).to eq(1200)
+      expect(SandDollar.configuration.session_lifetime).to eq(SandDollar::Default::SESSION_LIFETIME)
     end
 
     it "configures the token_length" do
-      expect(SandDollar.configuration.token_length).to eq(128)
+      expect(SandDollar.configuration.token_length).to eq(SandDollar::Default::TOKEN_LENGTH)
     end
   end
 
