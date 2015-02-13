@@ -5,10 +5,10 @@ module SandDollar
 
     def initialize
       # Number of seconds of inactivity a session will survive
-      self.session_lifetime = 1200
+      self.session_lifetime = SandDollar::Default::SESSION_LIFETIME
 
       # Number of seconds of inactivity a session will survive
-      self.token_length = 128
+      self.token_length = SandDollar::Default::TOKEN_LENGTH
     end
 
     def session_lifetime=(int)
