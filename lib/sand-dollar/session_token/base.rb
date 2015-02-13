@@ -61,7 +61,7 @@ module SandDollar::SessionToken
     end
 
     def expired?
-      ttl < 1
+      ttl <= 0
     end
 
     def alive?
@@ -69,6 +69,7 @@ module SandDollar::SessionToken
     end
 
     def keep_alive
+      return self if expired?
       @updated_at = Time.now
       self
     end
