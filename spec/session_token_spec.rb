@@ -106,7 +106,7 @@ describe SandDollar::SessionToken do
 
   end
 
-  describe ".expired?/alive?" do
+  describe ".expired? and .alive?" do
 
     context "When using the default config" do
 
@@ -152,10 +152,43 @@ describe SandDollar::SessionToken do
         expect(subject.alive?).to eq(true)
 
         Delorean.back_to_the_present
-        Delorean.jump(life + 1)
+        Delorean.jump(life)
 
         expect(subject.expired?).to eq(true)
         expect(subject.alive?).to eq(false)
+      end
+    end
+
+  end
+
+  describe ".keep_alive" do
+
+    context "When using the default config" do
+
+      let(:life) { SandDollar::Default::SESSION_LIFETIME }
+
+      it "sets updated_at to now" do
+        subject = APISessionToken.new()
+
+        Delorean.jump(life - 1)
+
+        subject.keep_alive
+
+        t = Time.now
+        expect(t-1...t+1).to cover(subject.updated_at)
+        expect(life-1...life).to cover(subject.ttl)
+      end
+
+      it "does nothing if expired" do
+        subject = APISessionToken.new()
+        updated_at = subject.updated_at
+
+        Delorean.jump(life + 1)
+
+        subject.keep_alive
+
+        expect(updated_at-1...updated_at+1).to cover(subject.updated_at)
+        expect(subject.expired?).to eq(true)
       end
     end
 
