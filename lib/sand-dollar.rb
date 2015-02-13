@@ -1,5 +1,3 @@
 require 'sand-dollar/resources/version'
-
-module SandDollar
-  # Your code goes here...
-end
+require 'sand-dollar/configuration'
+require 'sand-dollar/session_token/base'
