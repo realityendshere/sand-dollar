@@ -2,7 +2,7 @@ require 'spec_helper'
 require 'delorean'
 
 class APISessionToken
-  include SandDollar::SessionToken::Base
+  include SandDollar::SessionToken
 end
 
 describe SandDollar::SessionToken do

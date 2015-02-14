@@ -3,7 +3,6 @@ module SandDollar::SessionToken
 
     def self.included(base)
       base.class_eval do
-        base.include SandDollar::SessionToken::Base
         base.extend ClassMethods
         base.include InstanceMethods
 
