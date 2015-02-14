@@ -5,5 +5,11 @@ module SandDollar
 
     TOKEN_LENGTH = 128
 
+    VALID_STORAGE = [:none, :mongoid]
+
+    STORAGE = VALID_STORAGE.first
+
+    USER_MODEL = :user
+
   end
 end
