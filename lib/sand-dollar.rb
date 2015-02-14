@@ -1,3 +1,4 @@
+require 'active_support/inflector'
 require 'sand-dollar/resources/version'
 require 'sand-dollar/resources/default'
 require 'sand-dollar/exceptions'

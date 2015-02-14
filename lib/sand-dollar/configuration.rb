@@ -20,7 +20,9 @@ module SandDollar
     end
 
     def session_lifetime=(int)
-      unless int.is_a? Integer
+      return if int.nil?
+
+      unless int.is_a?(Integer) and int > 0
         warn "SandDollar session_lifetime must be an Integer, #{int.class} provided. Using current value: #{@session_lifetime}"
         return
       end
@@ -29,7 +31,9 @@ module SandDollar
     end
 
     def token_length=(int)
-      unless int.is_a? Integer
+      return if int.nil?
+
+      unless int.is_a?(Integer) and int > 0
         warn "SandDollar token_length must be an Integer, #{int.class} provided. Using current value: #{@token_length}"
         return
       end
@@ -38,7 +42,9 @@ module SandDollar
     end
 
     def storage=(value)
-      value = value.to_sym
+      return if value.nil?
+
+      value = value.to_s.underscore.to_sym
 
       unless SandDollar::Default::VALID_STORAGE.include?(value)
         raise SandDollar::InvalidStorageConfig
@@ -49,14 +55,16 @@ module SandDollar
     end
 
     def user_model=(value)
-      cleaned = value.to_s.strip
+      return if value.nil?
+
+      cleaned = value.to_s.underscore.strip
 
       unless cleaned.length > 0
         warn "SandDollar user_model cannot be blank. Using current value: #{@user_model}"
         return
       end
 
-      @user_model = cleaned
+      @user_model = cleaned.to_sym
     end
   end
 
