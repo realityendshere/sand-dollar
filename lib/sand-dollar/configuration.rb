@@ -59,6 +59,11 @@ module SandDollar
 
       cleaned = value.to_s.underscore.strip
 
+      unless (value.is_a?(String) || value.is_a?(Symbol))
+        warn "SandDollar user_model must be a String or Symbol, #{value.class} provided. Using current value: #{@user_model}"
+        return
+      end
+
       unless cleaned.length > 0
         warn "SandDollar user_model cannot be blank. Using current value: #{@user_model}"
         return
