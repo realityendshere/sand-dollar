@@ -10,7 +10,6 @@ module SandDollar::SessionToken
         ## INDEXES                  ##
         ##############################
 
-        index({ token: 1 }, { unique: true, name: "sand_dollar_token_index" })
         index({ updated_at: 1 }, { expire_after_seconds: session_lifetime })
 
         ##############################
@@ -23,18 +22,8 @@ module SandDollar::SessionToken
         ## FIELDS                   ##
         ##############################
 
-        field :token, type: String
-        attr_readonly :token
+        field :_id, type: String, default: -> { generate_token }
 
-        ##############################
-        ## SCOPES                   ##
-        ##############################
-
-        scope :alive, -> () {
-          all_of(
-            {"updated_at" => {'$gte' => Time.now - session_lifetime}}
-          )
-        }
       end
     end
 
@@ -44,8 +33,8 @@ module SandDollar::SessionToken
     ##############################
 
     module ClassMethods
-      def find_by_token(token, scope = unscoped)
-        scope.where(token: token).first rescue nil
+      def find_by_token(token)
+        self.find(token) rescue nil
       end
     end
 
@@ -55,19 +44,35 @@ module SandDollar::SessionToken
 
     module InstanceMethods
 
-      def after_initialize(*args)
-        set_token
+      def token
+        read_attribute(:_id)
       end
 
-      def keep_alive
-        self.touch
+      def updated_at
+        read_attribute(:updated_at)
+      end
+
+      def user_id
+        read_attribute(:user_id)
+      end
+
+      def authenticate_as user_instance
+        self.user = user_instance
+        self.save
       end
 
       protected
 
-      def set_token
-        self.token = generate_token
+      def setup_session
+        self
       end
+
+      def update_activity_timestamp
+        self.write_attribute(:updated_at, Time.now)
+        self.save
+        self
+      end
+
     end
 
   end

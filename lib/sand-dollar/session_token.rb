@@ -3,6 +3,7 @@ module SandDollar::SessionToken
   def self.included(base)
     base.class_eval do
       base.extend ClassMethods
+      base.include InstanceMethods
 
       persistence_strategy = SandDollar.configuration.storage
 
@@ -19,6 +20,14 @@ module SandDollar::SessionToken
   ##############################
 
   module ClassMethods
+    def store
+      @store ||= Hash.new
+    end
+
+    def find_by_token(token)
+      store[token] rescue nil
+    end
+
     def session_lifetime
       SandDollar.configuration.session_lifetime
     end
@@ -28,52 +37,74 @@ module SandDollar::SessionToken
   ## INSTANCE METHODS         ##
   ##############################
 
-  def initialize(*args)
-    self.send(:before_initialize, *args) if self.respond_to?(:before_initialize)
-    ret = super
-    self.send(:after_initialize, *args) if self.respond_to?(:after_initialize)
-    ret
+  module InstanceMethods
+    def initialize(*args)
+      self.send(:before_initialize, *args) if self.respond_to?(:before_initialize)
+      ret = super
+      self.send(:after_initialize, *args) if self.respond_to?(:after_initialize)
+      ret
+    end
+
+    def before_initialize(*args)
+      nil
+    end
+
+    def after_initialize(*args)
+      setup_session
+    end
+
+    def token
+      @token ||= generate_token
+    end
+
+    def updated_at
+      session_data[:updated_at]
+    end
+
+    def user_id
+      session_data[:user_id]
+    end
+
+    def ttl
+      updated_at + self.class.session_lifetime - Time.now
+    end
+
+    def expired?
+      ttl <= 0
+    end
+
+    def alive?
+      !expired?
+    end
+
+    def keep_alive
+      return self if expired?
+      update_activity_timestamp
+      self
+    end
+
+    def authenticate_as user_instance
+      session_data[:user_id] = user_instance.respond_to?(:id) ? user_instance.id : user_instance
+    end
+
+    protected
+
+    def setup_session
+      update_activity_timestamp
+    end
+
+    def update_activity_timestamp
+      session_data[:updated_at] = Time.now
+      self
+    end
+
+    def generate_token
+      l = SandDollar.configuration.token_length
+      SecureRandom.base64(l).tr('+/=lIO0', 'pqrsxyz')[0...l]
+    end
+
+    def session_data
+      self.class.store[token] ||= {}
+    end
   end
-
-  def before_initialize(*args)
-    nil
-  end
-
-  def after_initialize(*args)
-    nil
-  end
-
-  def ttl
-    updated_at + self.class.session_lifetime - Time.now
-  end
-
-  def expired?
-    ttl <= 0
-  end
-
-  def alive?
-    !expired?
-  end
-
-  def keep_alive
-    return self if expired?
-    @updated_at = Time.now
-    self
-  end
-
-  protected
-
-  def set_token
-    @token = generate_token
-    @updated_at = Time.now
-    self
-  end
-
-  # protected
-
-  def generate_token
-    l = SandDollar.configuration.token_length
-    SecureRandom.base64(l).tr('+/=lIO0', 'pqrsxyz')[0...l]
-  end
-
 end
