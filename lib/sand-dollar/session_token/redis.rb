@@ -49,9 +49,14 @@ module SandDollar::SessionToken
 
       def save
         store.set(token, session_data.to_json)
+        store.expire(token, ttl.ceil)
+        self
       end
 
       def load_token(token)
+        token = token.to_s.strip
+        return self unless token.length > 0
+
         result = store.get(token)
         return self unless result.is_a?(String)
 
