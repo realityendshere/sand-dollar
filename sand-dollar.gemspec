@@ -27,4 +27,5 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'delorean', '~> 2.1.0'
 
   spec.add_development_dependency 'mongoid', '~> 4.0.1'
+  spec.add_development_dependency 'redis', '~> 3.2.1'
 end
