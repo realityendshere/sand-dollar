@@ -24,12 +24,47 @@ module SandDollar::SessionToken
       @store ||= Hash.new
     end
 
-    def find_by_token(token)
-      store[token] rescue nil
+    def disburse(*args)
+      self.new(*args)
+    end
+
+    def discard(token)
+      store.delete(token)
+    end
+
+    def discard_all
+      @store = nil
+    end
+
+    def token_exists?(token)
+      token = token.to_s.strip
+      return false unless token.length > 0
+      store.has_key?(token)
+    end
+
+    def discover(token)
+      return nil unless token_exists?(token)
+      new().load_token(token)
     end
 
     def session_lifetime
       SandDollar.configuration.session_lifetime
+    end
+
+    def token_user_class
+      token_user_class_name.constantize
+    end
+
+    def token_user_id_field
+      token_user_class_name.foreign_key.to_sym
+    end
+
+    def token_user_class_name
+      token_user_model_config.to_s.classify
+    end
+
+    def token_user_model_config
+      SandDollar.configuration.user_model
     end
   end
 
@@ -40,6 +75,7 @@ module SandDollar::SessionToken
   module InstanceMethods
     def initialize(*args)
       self.send(:before_initialize, *args) if self.respond_to?(:before_initialize)
+      define_singleton_method(self.class.token_user_id_field, method(:identify_user))
       ret = super
       self.send(:after_initialize, *args) if self.respond_to?(:after_initialize)
       ret
@@ -61,10 +97,6 @@ module SandDollar::SessionToken
       session_data[:updated_at]
     end
 
-    def user_id
-      session_data[:user_id]
-    end
-
     def ttl
       updated_at + self.class.session_lifetime - Time.now
     end
@@ -83,8 +115,20 @@ module SandDollar::SessionToken
       self
     end
 
+    def discard
+      self.class.discard(token)
+    end
+
     def authenticate_as user_instance
-      session_data[:user_id] = user_instance.respond_to?(:id) ? user_instance.id : user_instance
+      session_data[self.class.token_user_id_field] = user_instance.respond_to?(:id) ? user_instance.id : user_instance
+    end
+
+    def identify_user
+      session_data[self.class.token_user_id_field]
+    end
+
+    def load_token(token)
+      self
     end
 
     protected

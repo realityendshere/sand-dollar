@@ -23,9 +23,21 @@ module SandDollar::SessionToken
         @store ||= ::Redis.new
       end
 
-      def find_by_token(token)
-        new().load_token(token)
+      def token_exists?(token)
+        token = token.to_s.strip
+        return false unless token.length > 0
+        store.exists("token/#{token}")
       end
+
+      def discard(token)
+        store.del("token/#{token}")
+      end
+
+      def discard_all
+        keys = store.keys("token/*")
+        store.del(*keys) if keys && keys.count > 0
+      end
+
     end
 
     ##############################
@@ -39,25 +51,25 @@ module SandDollar::SessionToken
       end
 
       def user_id
-        session_data[:user_id]
+        session_data[self.class.token_user_id_field]
       end
 
       def authenticate_as user_instance
-        session_data[:user_id] = user_instance.respond_to?(:id) ? user_instance.id : user_instance
+        session_data[self.class.token_user_id_field] = user_instance.respond_to?(:id) ? user_instance.id : user_instance
         self.save
       end
 
       def save
-        store.set(token, session_data.to_json)
+        store.set("token/#{token}", session_data.to_json)
         store.expire(token, ttl.ceil)
         self
       end
 
       def load_token(token)
         token = token.to_s.strip
-        return self unless token.length > 0
+        return self unless token.length > 0 && store.exists("token/#{token}")
 
-        result = store.get(token)
+        result = store.get("token/#{token}")
         return self unless result.is_a?(String)
 
         @session_data = JSON.parse(result, :symbolize_names => true)

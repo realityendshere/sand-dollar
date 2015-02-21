@@ -16,7 +16,7 @@ module SandDollar::SessionToken
         ## RELATIONSHIPS            ##
         ##############################
 
-        belongs_to :user, inverse_of: nil
+        belongs_to token_user_model_config, inverse_of: nil
 
         ##############################
         ## FIELDS                   ##
@@ -33,7 +33,16 @@ module SandDollar::SessionToken
     ##############################
 
     module ClassMethods
-      def find_by_token(token)
+      def discard(token)
+        record = discover(token)
+        record.delete if record.respond_to?(:delete)
+      end
+
+      def discard_all
+        self.all.map!(&:discard)
+      end
+
+      def discover(token)
         self.find(token) rescue nil
       end
     end
@@ -52,13 +61,17 @@ module SandDollar::SessionToken
         read_attribute(:updated_at)
       end
 
-      def user_id
-        read_attribute(:user_id)
+      def authenticate_as user_instance
+        write_attribute(self.class.token_user_id_field, user_instance.id)
+        self.save
       end
 
-      def authenticate_as user_instance
-        self.user = user_instance
-        self.save
+      def identify_user
+        read_attribute(self.class.token_user_id_field)
+      end
+
+      def discard
+        self.delete
       end
 
       protected

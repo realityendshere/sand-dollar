@@ -3,26 +3,32 @@ module SandDollar::SessionToken
 
     def self.included(base)
       base.class_eval do
-        base.extend ClassMethods
+        # base.extend ClassMethods
         base.include InstanceMethods
       end
     end
 
 
-    ##############################
-    ## CLASS METHODS            ##
-    ##############################
+    # ##############################
+    # ## CLASS METHODS            ##
+    # ##############################
 
-    module ClassMethods
+    # module ClassMethods
 
-    end
+    # end
 
     ##############################
     ## INSTANCE METHODS         ##
     ##############################
 
     module InstanceMethods
+      def load_token(token)
+        token = token.to_s.strip
+        return self unless token.length > 0 && store.has_key?(token)
 
+        @token = token
+        self
+      end
     end
 
   end
