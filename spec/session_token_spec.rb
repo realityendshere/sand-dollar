@@ -51,6 +51,75 @@ describe SandDollar::SessionToken do
     end
   end
 
+  describe "#token_exists?" do
+    it "returns false when no matching token can be found" do
+      APISessionToken.disburse()
+      test = APISessionToken.token_exists?('fails')
+      expect(test).to eq(false)
+      test = APISessionToken.token_exists?(nil)
+      expect(test).to eq(false)
+    end
+
+    it "returns true when a matching token can be found" do
+      subject = APISessionToken.disburse()
+      test = APISessionToken.token_exists?(subject.token)
+      expect(test).to eq(true)
+    end
+  end
+
+  describe "#discover" do
+    it "returns nil when no matching token can be found" do
+      subject = APISessionToken.discover('fails')
+      expect(subject.is_a?(APISessionToken)).to eq(false)
+      expect(subject).to be_nil
+    end
+
+    it "returns a session token instance when a matching token can be found" do
+      subject = APISessionToken.disburse()
+      test = APISessionToken.discover(subject.token)
+      expect(test.is_a?(APISessionToken)).to eq(true)
+      expect(test.token).to eq(subject.token)
+    end
+  end
+
+  describe "#discard" do
+    it "destroys the specified token" do
+      subject = APISessionToken.disburse()
+      test = APISessionToken.discover(subject.token)
+      expect(test.is_a?(APISessionToken)).to eq(true)
+      expect(APISessionToken.token_exists?(subject.token)).to eq(true)
+      APISessionToken.discard(subject.token)
+      test = APISessionToken.discover(subject.token)
+      expect(test.is_a?(APISessionToken)).to eq(false)
+      expect(APISessionToken.token_exists?(subject.token)).to eq(false)
+      expect(test).to be_nil
+    end
+  end
+
+  describe "#discard_all" do
+    it "destroys all tokens" do
+      tokens = Array.new(30).map {|t|
+        APISessionToken.disburse().token
+      }
+
+      expect(tokens.count).to eq(30)
+
+      tests = tokens.map {|t|
+        APISessionToken.token_exists?(t)
+      }
+
+      expect(tests).to match_array(Array.new(30, true))
+
+      APISessionToken.discard_all
+
+      tests = tokens.map {|t|
+        APISessionToken.token_exists?(t)
+      }
+
+      expect(tests).to match_array(Array.new(30, false))
+    end
+  end
+
   describe "#session_lifetime" do
     context "When using the default config" do
       it "returns the default session_lifetime" do
