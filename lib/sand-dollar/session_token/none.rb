@@ -24,7 +24,7 @@ module SandDollar::SessionToken
     module InstanceMethods
       def load_token(token)
         token = token.to_s.strip
-        return self unless token.length > 0 && store.has_key?(token)
+        return self unless token.length > 0 && self.class.store.has_key?(token)
 
         @token = token
         self
