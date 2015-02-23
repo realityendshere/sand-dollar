@@ -24,7 +24,7 @@ module SandDollar::SessionToken
       @store ||= Hash.new
     end
 
-    def disburse(*args)
+    def dispense(*args)
       self.new(*args)
     end
 

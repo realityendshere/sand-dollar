@@ -73,7 +73,7 @@ module SandDollar::SessionToken
         return self unless result.is_a?(String)
 
         @session_data = JSON.parse(result, :symbolize_names => true)
-        @session_data[:updated_at] = DateTime.parse(@session_data[:updated_at]).to_time
+        @session_data[:updated_at] = Time.parse(@session_data[:updated_at])
         @token = token
         self
       end

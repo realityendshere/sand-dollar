@@ -22,7 +22,7 @@ describe SandDollar::SessionToken do
 
   describe 'initialize' do
     context "When using default token length" do
-      let(:subject) { APISessionToken.disburse() }
+      let(:subject) { APISessionToken.dispense() }
 
       it "automatically generates a token" do
         expect(subject.token.length).to eq(SandDollar::Default::TOKEN_LENGTH)
@@ -36,7 +36,7 @@ describe SandDollar::SessionToken do
         end
       end
 
-      let(:subject) { APISessionToken.disburse() }
+      let(:subject) { APISessionToken.dispense() }
 
       it "automatically generates a token of the configured length" do
         expect(subject.token.length).to eq(512)
@@ -44,16 +44,16 @@ describe SandDollar::SessionToken do
     end
   end
 
-  describe "#disburse" do
+  describe "#dispense" do
     it "returns a new token instance" do
-      subject = APISessionToken.disburse()
+      subject = APISessionToken.dispense()
       expect(subject.is_a?(APISessionToken)).to eq(true)
     end
   end
 
   describe "#token_exists?" do
     it "returns false when no matching token can be found" do
-      APISessionToken.disburse()
+      APISessionToken.dispense()
       test = APISessionToken.token_exists?('fails')
       expect(test).to eq(false)
       test = APISessionToken.token_exists?(nil)
@@ -61,7 +61,7 @@ describe SandDollar::SessionToken do
     end
 
     it "returns true when a matching token can be found" do
-      subject = APISessionToken.disburse()
+      subject = APISessionToken.dispense()
       test = APISessionToken.token_exists?(subject.token)
       expect(test).to eq(true)
     end
@@ -75,7 +75,7 @@ describe SandDollar::SessionToken do
     end
 
     it "returns a session token instance when a matching token can be found" do
-      subject = APISessionToken.disburse()
+      subject = APISessionToken.dispense()
       test = APISessionToken.discover(subject.token)
       expect(test.is_a?(APISessionToken)).to eq(true)
       expect(test.token).to eq(subject.token)
@@ -84,7 +84,7 @@ describe SandDollar::SessionToken do
 
   describe "#discard" do
     it "destroys the specified token" do
-      subject = APISessionToken.disburse()
+      subject = APISessionToken.dispense()
       test = APISessionToken.discover(subject.token)
       expect(test.is_a?(APISessionToken)).to eq(true)
       expect(APISessionToken.token_exists?(subject.token)).to eq(true)
@@ -99,7 +99,7 @@ describe SandDollar::SessionToken do
   describe "#discard_all" do
     it "destroys all tokens" do
       tokens = Array.new(30).map {|t|
-        APISessionToken.disburse().token
+        APISessionToken.dispense().token
       }
 
       expect(tokens.count).to eq(30)
@@ -259,7 +259,7 @@ describe SandDollar::SessionToken do
 
   describe ".updated_at" do
     context "When checking a new session" do
-      let(:subject) { APISessionToken.disburse() }
+      let(:subject) { APISessionToken.dispense() }
       it "returns a recent timestamp" do
         t = Time.now
         expect(t-1...t+1).to cover(subject.updated_at)
@@ -278,13 +278,13 @@ describe SandDollar::SessionToken do
       let(:user_model) { nil }
 
       it "responds to authenticate_as method" do
-        subject = APISessionToken.disburse()
+        subject = APISessionToken.dispense()
         subject.authenticate_as(1)
         expect(subject.identify_user).to eq(1)
       end
 
       it "responds to user_id method" do
-        subject = APISessionToken.disburse()
+        subject = APISessionToken.dispense()
         subject.authenticate_as(2)
         expect(subject.respond_to?(:user_id)).to eq(true)
         expect(subject.user_id).to eq(2)
@@ -294,7 +294,7 @@ describe SandDollar::SessionToken do
     context "When using a symbol for user_model" do
       let(:user_model) { :employee }
       it "responds to custom user id retrieval method" do
-        subject = APISessionToken.disburse()
+        subject = APISessionToken.dispense()
         subject.authenticate_as(3)
         expect(subject.identify_user).to eq(3)
         expect(subject.respond_to?(:user_id)).to eq(false)
@@ -306,7 +306,7 @@ describe SandDollar::SessionToken do
     context "When using a string for user_model" do
       let(:user_model) { 'Admin' }
       it "responds to custom user id retrieval method" do
-        subject = APISessionToken.disburse()
+        subject = APISessionToken.dispense()
         subject.authenticate_as(4)
         expect(subject.identify_user).to eq(4)
         expect(subject.respond_to?(:user_id)).to eq(false)
@@ -321,12 +321,12 @@ describe SandDollar::SessionToken do
       let(:life) { SandDollar::Default::SESSION_LIFETIME }
 
       it "returns approximately the default session_lifetime" do
-        subject = APISessionToken.disburse()
+        subject = APISessionToken.dispense()
         expect(life-1...life).to cover(subject.ttl)
       end
 
       it "returns a smaller number as time passes" do
-        subject = APISessionToken.disburse()
+        subject = APISessionToken.dispense()
         Delorean.jump(life - 20)
         expect(19...21).to cover(subject.ttl)
       end
@@ -342,12 +342,12 @@ describe SandDollar::SessionToken do
       let(:life) { 120 }
 
       it "returns approximately the specified session_lifetime" do
-        subject = APISessionToken.disburse()
+        subject = APISessionToken.dispense()
         expect(life-1...life).to cover(subject.ttl)
       end
 
       it "returns a smaller number as time passes" do
-        subject = APISessionToken.disburse()
+        subject = APISessionToken.dispense()
         Delorean.jump(life - 20)
         expect(19...21).to cover(subject.ttl)
       end
@@ -362,7 +362,7 @@ describe SandDollar::SessionToken do
       let(:life) { SandDollar::Default::SESSION_LIFETIME }
 
       it "returns true/false after #{SandDollar::Default::SESSION_LIFETIME} seconds" do
-        subject = APISessionToken.disburse()
+        subject = APISessionToken.dispense()
 
         expect(subject.expired?).to eq(false)
         expect(subject.alive?).to eq(true)
@@ -390,7 +390,7 @@ describe SandDollar::SessionToken do
       let(:life) { 120 }
 
       it "returns true/false after the configured number of seconds" do
-        subject = APISessionToken.disburse()
+        subject = APISessionToken.dispense()
 
         expect(subject.expired?).to eq(false)
         expect(subject.alive?).to eq(true)
@@ -417,7 +417,7 @@ describe SandDollar::SessionToken do
       let(:life) { SandDollar::Default::SESSION_LIFETIME }
 
       it "sets updated_at to now" do
-        subject = APISessionToken.disburse()
+        subject = APISessionToken.dispense()
 
         Delorean.jump(life - 1)
 
@@ -429,7 +429,7 @@ describe SandDollar::SessionToken do
       end
 
       it "does nothing if expired" do
-        subject = APISessionToken.disburse()
+        subject = APISessionToken.dispense()
         updated_at = subject.updated_at
 
         Delorean.jump(life + 1)
