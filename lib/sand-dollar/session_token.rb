@@ -98,6 +98,7 @@ module SandDollar::SessionToken
     end
 
     def ttl
+      return 0 unless updated_at
       updated_at + self.class.session_lifetime - Time.now
     end
 
