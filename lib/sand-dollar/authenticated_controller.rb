@@ -21,7 +21,7 @@ module SandDollar::AuthenticatedController
     private
 
     def signed_in?
-      !!current_api_session_token.user_id
+      !!_current_identification
     end
 
     def signed_in!
@@ -29,7 +29,7 @@ module SandDollar::AuthenticatedController
     end
 
     def current_user
-      User.find(current_api_session_token.user_id) rescue nil
+      _current_user_model.find(_current_identification) rescue nil
     end
 
     def api_session_token_authenticate!
@@ -50,6 +50,14 @@ module SandDollar::AuthenticatedController
 
     def _parameter_missing e
       _error e.to_s, 400
+    end
+
+    def _current_identification
+      current_api_session_token.send(current_api_session_token.class.token_user_id_field)
+    end
+
+    def _current_user_model
+      current_api_session_token.class.token_user_class
     end
 
     def _bad_request message = "Bad request"

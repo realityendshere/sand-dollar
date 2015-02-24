@@ -3,7 +3,6 @@ module SandDollar::SessionController
   def self.included(base)
     base.class_eval do
       skip_before_filter :api_session_token_authenticate!, only: [:create]
-
       base.include InstanceMethods
     end
   end
