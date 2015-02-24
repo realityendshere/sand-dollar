@@ -123,7 +123,7 @@ module SandDollar::SessionToken
       self.class.discard(token)
     end
 
-    def authenticate_as user_instance
+    def authenticated_as user_instance
       session_data[self.class.token_user_id_field] = user_instance.respond_to?(:id) ? user_instance.id : user_instance
     end
 

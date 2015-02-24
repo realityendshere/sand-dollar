@@ -61,7 +61,7 @@ module SandDollar::SessionToken
         read_attribute(:updated_at)
       end
 
-      def authenticate_as user_instance
+      def authenticated_as user_instance
         write_attribute(self.class.token_user_id_field, user_instance.id)
         self.save
       end

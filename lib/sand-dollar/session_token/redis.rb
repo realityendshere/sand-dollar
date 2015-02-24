@@ -64,7 +64,7 @@ module SandDollar::SessionToken
         @identity ||= _retrieve_identity
       end
 
-      def authenticate_as user_instance
+      def authenticated_as user_instance
         @identity = user_instance.respond_to?(:id) ? user_instance.id : user_instance
         self.save
       end

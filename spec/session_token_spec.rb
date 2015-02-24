@@ -267,7 +267,7 @@ describe SandDollar::SessionToken do
     end
   end
 
-  describe ".authenticate_as & .identify_user" do
+  describe ".authenticated_as & .identify_user" do
     before do
       SandDollar.configure do |config|
         config.user_model = user_model
@@ -277,15 +277,15 @@ describe SandDollar::SessionToken do
     context "When using the default config" do
       let(:user_model) { nil }
 
-      it "responds to authenticate_as method" do
+      it "responds to authenticated_as method" do
         subject = APISessionToken.dispense()
-        subject.authenticate_as(1)
+        subject.authenticated_as(1)
         expect(subject.identify_user).to eq(1)
       end
 
       it "responds to user_id method" do
         subject = APISessionToken.dispense()
-        subject.authenticate_as(2)
+        subject.authenticated_as(2)
         expect(subject.respond_to?(:user_id)).to eq(true)
         expect(subject.user_id).to eq(2)
       end
@@ -295,7 +295,7 @@ describe SandDollar::SessionToken do
       let(:user_model) { :employee }
       it "responds to custom user id retrieval method" do
         subject = APISessionToken.dispense()
-        subject.authenticate_as(3)
+        subject.authenticated_as(3)
         expect(subject.identify_user).to eq(3)
         expect(subject.respond_to?(:user_id)).to eq(false)
         expect(subject.respond_to?(:employee_id)).to eq(true)
@@ -307,7 +307,7 @@ describe SandDollar::SessionToken do
       let(:user_model) { 'Admin' }
       it "responds to custom user id retrieval method" do
         subject = APISessionToken.dispense()
-        subject.authenticate_as(4)
+        subject.authenticated_as(4)
         expect(subject.identify_user).to eq(4)
         expect(subject.respond_to?(:user_id)).to eq(false)
         expect(subject.respond_to?(:admin_id)).to eq(true)
