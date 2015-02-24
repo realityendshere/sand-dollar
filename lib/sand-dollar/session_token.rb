@@ -115,6 +115,10 @@ module SandDollar::SessionToken
       self
     end
 
+    def save
+      defined?(super) ? super : false
+    end
+
     def discard
       self.class.discard(token)
     end
