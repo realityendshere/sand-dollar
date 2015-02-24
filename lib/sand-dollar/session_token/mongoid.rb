@@ -82,7 +82,6 @@ module SandDollar::SessionToken
 
       def update_activity_timestamp
         self.write_attribute(:updated_at, Time.now)
-        self.save
         self
       end
 

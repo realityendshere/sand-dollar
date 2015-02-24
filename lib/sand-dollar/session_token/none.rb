@@ -29,6 +29,10 @@ module SandDollar::SessionToken
         @token = token
         self
       end
+
+      def save
+        false
+      end
     end
 
   end

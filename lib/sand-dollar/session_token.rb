@@ -111,7 +111,7 @@ module SandDollar::SessionToken
 
     def keep_alive
       return self if expired?
-      update_activity_timestamp
+      update_activity_timestamp.save
       self
     end
 
