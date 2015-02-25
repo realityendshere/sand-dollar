@@ -8,7 +8,23 @@ module SandDollar::AuthenticatedController
       rescue_from ActionController::ParameterMissing, with: :_parameter_missing
       before_filter :api_session_token_authenticate!
 
+      base.extend ClassMethods
       base.include InstanceMethods
+    end
+  end
+
+  ##############################
+  ## CLASS METHODS            ##
+  ##############################
+
+  module ClassMethods
+    def session_class session_class = nil
+      @session_class = session_class unless session_class.nil?
+      @session_class
+    end
+
+    def inherited(subclass)
+      subclass.instance_variable_set('@session_class', instance_variable_get('@session_class'))
     end
   end
 
@@ -17,6 +33,10 @@ module SandDollar::AuthenticatedController
   ##############################
 
   module InstanceMethods
+
+    def session_class
+      self.class.session_class
+    end
 
     private
 
@@ -39,7 +59,7 @@ module SandDollar::AuthenticatedController
     end
 
     def current_api_session_token
-      @current_api_session_token ||= (APISessionToken.discover(_authorization_header) || APISessionToken.dispense())
+      @current_api_session_token ||= (session_class.discover(_authorization_header) || session_class.dispense())
       @current_api_session_token
     end
 
