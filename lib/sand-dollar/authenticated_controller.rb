@@ -34,10 +34,6 @@ module SandDollar::AuthenticatedController
 
   module InstanceMethods
 
-    def session_class
-      self.class.session_class
-    end
-
     private
 
     def signed_in?
@@ -61,6 +57,10 @@ module SandDollar::AuthenticatedController
     def current_api_session_token
       @current_api_session_token ||= (session_class.discover(_authorization_header) || session_class.dispense())
       @current_api_session_token
+    end
+
+    def session_class
+      self.class.session_class
     end
 
     def _authorization_header
