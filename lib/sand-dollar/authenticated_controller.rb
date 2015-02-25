@@ -3,8 +3,8 @@ module SandDollar::AuthenticatedController
   def self.included(base)
     base.class_eval do
       skip_before_action :verify_authenticity_token
-      rescue_from AuthenticationService::NotAuthorized, with: :_not_authorized
-      rescue_from AuthenticationService::AuthenticationFailed, with: :_authentication_failed
+      rescue_from SandDollar::AuthenticationService::NotAuthorized, with: :_not_authorized
+      rescue_from SandDollar::AuthenticationService::AuthenticationFailed, with: :_authentication_failed
       rescue_from ActionController::ParameterMissing, with: :_parameter_missing
       before_filter :api_session_token_authenticate!
 

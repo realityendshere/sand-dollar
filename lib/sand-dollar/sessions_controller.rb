@@ -51,7 +51,7 @@ module SandDollar::SessionsController
     end
 
     def _identity
-      @identity ||= User.find_by_username(_identification)
+      @identity ||= current_api_session_token.class.token_user_class.find_by_username(_identification)
     end
 
     def _identification
@@ -63,11 +63,11 @@ module SandDollar::SessionsController
     end
 
     def _provided_valid_credentials?
-      AuthenticationService.valid_identification_provided!(_identification) && _provided_valid_password?
+      SandDollar::AuthenticationService.valid_identification_provided!(_identification) && _provided_valid_password?
     end
 
     def _provided_valid_password?
-      AuthenticationService.authenticate_with_password!(_identity, _password.to_s)
+      SandDollar::AuthenticationService.authenticate_with_password!(_identity, _password.to_s)
     end
 
     def _provided_valid_api_key?
