@@ -1,4 +1,4 @@
-module SandDollar::SessionToken
+module SandDollar::Models::SessionToken
   module Mongoid
 
     def self.included(base)
@@ -16,7 +16,7 @@ module SandDollar::SessionToken
         ## RELATIONSHIPS            ##
         ##############################
 
-        belongs_to token_user_model_config, inverse_of: nil
+        belongs_to user_model_config, inverse_of: nil
 
         ##############################
         ## FIELDS                   ##
@@ -62,12 +62,12 @@ module SandDollar::SessionToken
       end
 
       def authenticated_as user_instance
-        write_attribute(self.class.token_user_id_field, user_instance.id)
+        write_attribute(self.class.user_model_id_field, user_instance.id)
         self.save
       end
 
       def identify_user
-        read_attribute(self.class.token_user_id_field)
+        read_attribute(self.class.user_model_id_field)
       end
 
       def discard

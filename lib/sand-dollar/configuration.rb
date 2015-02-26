@@ -71,6 +71,19 @@ module SandDollar
 
       @user_model = cleaned.to_sym
     end
+
+    def user_model_class
+      user_model_class_name.constantize
+    end
+
+    def user_model_id_field
+      user_model_class_name.foreign_key.to_sym
+    end
+
+    def user_model_class_name
+      user_model.to_s.classify
+    end
+
   end
 
   class << self

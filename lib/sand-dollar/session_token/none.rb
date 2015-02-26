@@ -1,4 +1,4 @@
-module SandDollar::SessionToken
+module SandDollar::Models::SessionToken
   module None
 
     def self.included(base)

@@ -2,7 +2,7 @@ require 'spec_helper'
 require 'delorean'
 
 class APISessionToken
-  include SandDollar::SessionToken
+  include SandDollar::Models::SessionToken
 end
 
 class User
@@ -14,7 +14,7 @@ end
 class Admin
 end
 
-describe SandDollar::SessionToken do
+describe SandDollar::Models::SessionToken do
   after do
     SandDollar.reset_configuration
     Delorean.back_to_the_present
@@ -141,7 +141,7 @@ describe SandDollar::SessionToken do
     end
   end
 
-  describe "#token_user_model_config" do
+  describe "#user_model_config" do
     before do
       SandDollar.configure do |config|
         config.user_model = user_model
@@ -151,26 +151,26 @@ describe SandDollar::SessionToken do
     context "When using the default config" do
       let(:user_model) { nil }
       it "returns the default user_model config" do
-        expect(APISessionToken.token_user_model_config).to eq(SandDollar::Default::USER_MODEL)
+        expect(APISessionToken.user_model_config).to eq(SandDollar::Default::USER_MODEL)
       end
     end
 
     context "When using a symbol for user_model" do
       let(:user_model) { :employee }
       it "returns the specified user_model" do
-        expect(APISessionToken.token_user_model_config).to eq(:employee)
+        expect(APISessionToken.user_model_config).to eq(:employee)
       end
     end
 
     context "When using a string for user_model" do
       let(:user_model) { 'Admin' }
       it "returns the specified user_model" do
-        expect(APISessionToken.token_user_model_config).to eq(:admin)
+        expect(APISessionToken.user_model_config).to eq(:admin)
       end
     end
   end
 
-  describe "#token_user_class_name" do
+  describe "#user_model_class_name" do
     before do
       SandDollar.configure do |config|
         config.user_model = user_model
@@ -180,26 +180,26 @@ describe SandDollar::SessionToken do
     context "When using the default config" do
       let(:user_model) { nil }
       it "returns the default User class" do
-        expect(APISessionToken.token_user_class_name).to eq('User')
+        expect(APISessionToken.user_model_class_name).to eq('User')
       end
     end
 
     context "When using a symbol for user_model" do
       let(:user_model) { :employee }
       it "returns the specified User class" do
-        expect(APISessionToken.token_user_class_name).to eq('Employee')
+        expect(APISessionToken.user_model_class_name).to eq('Employee')
       end
     end
 
     context "When using a string for user_model" do
       let(:user_model) { 'Admin' }
       it "returns the specified User class" do
-        expect(APISessionToken.token_user_class_name).to eq('Admin')
+        expect(APISessionToken.user_model_class_name).to eq('Admin')
       end
     end
   end
 
-  describe "#token_user_id_field" do
+  describe "#user_model_id_field" do
     before do
       SandDollar.configure do |config|
         config.user_model = user_model
@@ -209,26 +209,26 @@ describe SandDollar::SessionToken do
     context "When using the default config" do
       let(:user_model) { nil }
       it "returns the default User ID field" do
-        expect(APISessionToken.token_user_id_field).to eq(:user_id)
+        expect(APISessionToken.user_model_id_field).to eq(:user_id)
       end
     end
 
     context "When using a symbol for user_model" do
       let(:user_model) { :employee }
       it "returns the ID field for the specified User class" do
-        expect(APISessionToken.token_user_id_field).to eq(:employee_id)
+        expect(APISessionToken.user_model_id_field).to eq(:employee_id)
       end
     end
 
     context "When using a string for user_model" do
       let(:user_model) { 'Admin' }
       it "returns the ID field for the specified User class" do
-        expect(APISessionToken.token_user_id_field).to eq(:admin_id)
+        expect(APISessionToken.user_model_id_field).to eq(:admin_id)
       end
     end
   end
 
-  describe "#token_user_class" do
+  describe "#user_model_class" do
     before do
       SandDollar.configure do |config|
         config.user_model = user_model
@@ -238,21 +238,21 @@ describe SandDollar::SessionToken do
     context "When using the default config" do
       let(:user_model) { nil }
       it "returns the default User class" do
-        expect(APISessionToken.token_user_class).to eq(User)
+        expect(APISessionToken.user_model_class).to eq(User)
       end
     end
 
     context "When using a symbol for user_model" do
       let(:user_model) { :employee }
       it "returns the specified User class" do
-        expect(APISessionToken.token_user_class).to eq(Employee)
+        expect(APISessionToken.user_model_class).to eq(Employee)
       end
     end
 
     context "When using a string for user_model" do
       let(:user_model) { 'Admin' }
       it "returns the specified User class" do
-        expect(APISessionToken.token_user_class).to eq(Admin)
+        expect(APISessionToken.user_model_class).to eq(Admin)
       end
     end
   end

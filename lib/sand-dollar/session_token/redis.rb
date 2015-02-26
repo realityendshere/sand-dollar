@@ -1,6 +1,6 @@
 require 'redis'
 
-module SandDollar::SessionToken
+module SandDollar::Models::SessionToken
   module Redis
 
     # TODO: Make this work.
@@ -121,7 +121,7 @@ module SandDollar::SessionToken
       end
 
       def storage_key_identity
-        "#{storage_key}/#{self.class.token_user_id_field}"
+        "#{storage_key}/#{self.class.user_model_id_field}"
       end
     end
 
