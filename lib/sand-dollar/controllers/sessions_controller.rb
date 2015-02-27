@@ -72,9 +72,6 @@ module SandDollar
           SandDollar::AuthenticationService.authenticate_with_password!(_identity, _password.to_s)
         end
 
-        def _provided_valid_api_key?
-          params[:api_key] == 'foo key'
-        end
       end
 
     end
