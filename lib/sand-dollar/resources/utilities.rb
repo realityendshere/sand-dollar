@@ -4,7 +4,8 @@ module SandDollar
     module_function
 
     def season_password(password, salt)
-      salt[0...-1*password.bytesize] + password
+      pw = password.to_s
+      salt[0...-1*pw.bytesize] + pw
     end
 
   end
