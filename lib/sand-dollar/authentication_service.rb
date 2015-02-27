@@ -9,30 +9,17 @@ module SandDollar::AuthenticationService
     authenticate_request(*args) or raise SandDollar::AuthenticationFailed
   end
 
-  def valid_identification_provided?(identification)
-    identification.to_s.length > 0
-  end
-
-  def valid_identification_provided!(*args)
-    valid_identification_provided?(*args) or raise AuthenticationFailed
-  end
 end
 
-class PasswordAuthenticator
-  attr_reader :request
-
-  def initialize(request)
-    @request = request
-  end
-
+class PasswordAuthenticator < ::SandDollar::Authenticators::Base
   # def valid?
   #   return false unless request.post?
   #   !(post_params[:identification].blank? || post_params[:password].blank?)
   # end
 
   def authenticate!
-    user = SandDollar.configuration.user_model_class.find_by_identification(identification)
-    if user.nil? || user.password != SandDollar::Utilities.season_password(password, user.password_salt)
+    user = user_model_class.find_by_identification(identification)
+    if user.nil? || user.password != season_password(password, user.password_salt)
       false
     else
       user
