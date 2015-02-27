@@ -53,7 +53,7 @@ module SandDollar
         end
 
         def _identity
-          @identity ||= current_api_session_token.user_model_class.find_by_username(_identification)
+          @identity ||= current_api_session_token.user_model_class.find_by_identification(_identification)
         end
 
         def _identification

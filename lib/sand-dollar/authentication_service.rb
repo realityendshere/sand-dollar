@@ -20,16 +20,4 @@ module SandDollar::AuthenticationService
     authenticate_with_password(*args) or raise AuthenticationFailed
   end
 
-  # def authenticate_with_api_key(user, key, current_token)
-  #   user && key && current_token && OpenSSL::Digest::SHA256.new("#{user.username}:#{user.api_secret}:#{current_token}") == key
-  # end
-
-  # def authenticate_with_api_key!(*args)
-  #   authenticate_with_api_key(*args) or raise NotAuthorized
-  # end
-
-  def season_password(password, salt)
-    salt[0...-1*password.bytesize] + password
-  end
-
 end
