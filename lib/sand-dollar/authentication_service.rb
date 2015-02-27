@@ -39,5 +39,3 @@ class PasswordAuthenticator < ::SandDollar::Authenticators::Base
   end
 
 end
-
-

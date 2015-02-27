@@ -8,6 +8,4 @@ Gem.find_files("sand-dollar/authenticators/**/*.rb").each { |path| require path 
 require 'sand-dollar/exceptions'
 require 'sand-dollar/configuration'
 require 'sand-dollar/authentication_service'
-
-
-
+require 'sand-dollar/authenticators'
