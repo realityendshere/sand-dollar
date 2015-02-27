@@ -1,12 +1,13 @@
 require 'active_support/inflector'
-require 'sand-dollar/resources/version'
-require 'sand-dollar/resources/default'
-require 'sand-dollar/resources/utilities'
+
+Gem.find_files("sand-dollar/resources/**/*.rb").each { |path| require path }
+Gem.find_files("sand-dollar/models/**/*.rb").each { |path| require path }
+Gem.find_files("sand-dollar/controllers/**/*.rb").each { |path| require path }
+Gem.find_files("sand-dollar/authenticators/**/*.rb").each { |path| require path }
+
 require 'sand-dollar/exceptions'
 require 'sand-dollar/configuration'
-require 'sand-dollar/models/session_token'
-require 'sand-dollar/models/authenticatable'
-require 'sand-dollar/controllers/sessions_controller'
-require 'sand-dollar/controllers/authenticated_controller'
-require 'sand-dollar/controllers/authorized_controller'
 require 'sand-dollar/authentication_service'
+
+
+
