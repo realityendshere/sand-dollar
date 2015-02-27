@@ -23,4 +23,12 @@ module SandDollar
 
   end
 
+  class InvalidRequest < Exception
+
+    def to_s
+      "Request authenticators must be instantiated with an instance of Rack::Request or ActionDispatch::Request"
+    end
+
+  end
+
 end
