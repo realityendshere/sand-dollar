@@ -32,8 +32,8 @@ module SandDollar
         private
 
         def session_start
-          if post_params && _provided_valid_credentials?
-            current_api_session_token.authenticated_as _identity
+          if post_params && authenticate!
+            current_api_session_token.authenticated_as @identity
           end
         end
 
@@ -46,6 +46,10 @@ module SandDollar
           hash[id_field] = current_api_session_token.send(id_field)
 
           hash
+        end
+
+        def authenticate!
+          @identity = SandDollar::AuthenticationService.authenticate_request!(request)
         end
 
         def post_params

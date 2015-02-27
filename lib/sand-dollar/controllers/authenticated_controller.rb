@@ -5,8 +5,8 @@ module SandDollar
       def self.included(base)
         base.class_eval do
           skip_before_action :verify_authenticity_token
-          rescue_from SandDollar::AuthenticationService::NotAuthorized, with: :_not_authorized
-          rescue_from SandDollar::AuthenticationService::AuthenticationFailed, with: :_authentication_failed
+          rescue_from SandDollar::NotAuthorized, with: :_not_authorized
+          rescue_from SandDollar::AuthenticationFailed, with: :_authentication_failed
           rescue_from ActionController::ParameterMissing, with: :_parameter_missing
           before_filter :api_session_token_authenticate!, :except => [:_authentication_failed]
 
@@ -43,7 +43,7 @@ module SandDollar
         end
 
         def signed_in!
-          return _not_authorized unless signed_in?
+          signed_in? or raise SandDollar::NotAuthorized
         end
 
         def current_user
@@ -51,7 +51,7 @@ module SandDollar
         end
 
         def api_session_token_authenticate!
-          return _not_authorized unless _authorization_header && current_api_session_token.alive?
+          raise SandDollar::NotAuthorized unless _authorization_header && current_api_session_token.alive?
           current_api_session_token.keep_alive
           nil
         end
