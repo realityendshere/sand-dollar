@@ -15,8 +15,8 @@ module SandDollar
         SandDollar.configuration.user_model_class
       end
 
-      def season_password
-        SandDollar::Utilities.season_password
+      def season_password(*args)
+        SandDollar::Utilities.season_password(*args)
       end
 
     end
