@@ -11,7 +11,7 @@ module SandDollar::AuthenticationService
       auth = SandDollar::Authenticators.load(key).new(request)
       identity = auth.authenticate!
       identity.is_a?(SandDollar.configuration.user_model_class) ? identity : nil
-    }.flatten.first
+    }.compact.first
   end
 
   def authenticate_request!(*args)
