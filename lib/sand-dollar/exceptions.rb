@@ -31,4 +31,13 @@ module SandDollar
 
   end
 
+
+  class AuthenticatorNotFound < Exception
+
+    def to_s
+      "Desired authenticator missing. Expected to be found in PROJECT/app/authenticators or PROJECT/lib/authenticators"
+    end
+
+  end
+
 end
