@@ -2,10 +2,10 @@
 #       from the Rails App/API
 
 class SandDollarPasswordAuthenticator < SandDollar::Authenticators::Base
-  # def valid?
-  #   return false unless request.post?
-  #   !(post_params[:identification].blank? || post_params[:password].blank?)
-  # end
+  def valid?
+    return false unless request.post?
+    !(identification.blank? || password.blank?)
+  end
 
   def authenticate!
     user = user_model_class.find_by_identification(identification)

@@ -2,30 +2,22 @@
 #       from the Rails App/API
 
 class SandDollarTokenAuthenticator < SandDollar::Authenticators::Base
-  # def valid?
-  #   return false unless request.post?
-  #   !(post_params[:identification].blank? || post_params[:password].blank?)
-  # end
+  def valid?
+    !(authorization_header.blank?)
+  end
 
   def authenticate!
-    user = user_model_class.find_by_identification(identification)
-    if user.nil? || user.password != season_password(password, user.password_salt)
-      false
-    else
-      user
-    end
+    # TODO: Make this respect controller configuration for Token model
+    token = (APISessionToken.discover(authorization_header) || APISessionToken.dispense())
+    return false unless token.alive?
+
+    user = user_model_class.find(token.send(token.user_model_id_field)) rescue nil
+    user.nil? ? false : user
   end
 
-  def post_params
-    request.params.fetch('session')
-  end
-
-  def identification
-    post_params['identification']
-  end
-
-  def password
-    post_params['password']
+  def authorization_header
+    session_token = request.headers['Session-Token']
+    session_token unless session_token.to_s.empty?
   end
 
 end
