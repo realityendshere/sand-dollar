@@ -68,14 +68,6 @@ module SandDollar
           post_params[:password]
         end
 
-        def _provided_valid_credentials?
-          SandDollar::AuthenticationService.valid_identification_provided!(_identification) && _provided_valid_password?
-        end
-
-        def _provided_valid_password?
-          SandDollar::AuthenticationService.authenticate_with_password!(_identity, _password.to_s)
-        end
-
       end
 
     end
