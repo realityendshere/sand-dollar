@@ -2,7 +2,7 @@ module SandDollar::AuthenticationService
   module_function
 
   def authenticate_request(request)
-    authenticators = [:token, :password]
+    authenticators = [:sand_dollar_token, :sand_dollar_password]
 
     authenticators.select {|key|
       auth = SandDollar::Authenticators.load(key).new(request)
