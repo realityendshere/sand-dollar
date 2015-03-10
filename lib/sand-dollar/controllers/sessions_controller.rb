@@ -33,7 +33,7 @@ module SandDollar
 
         def session_start
           if post_params && authenticate!
-            current_api_session_token.authenticated_as @identity
+            current_api_session_token.authenticated_as @current_user
           end
         end
 
@@ -48,24 +48,8 @@ module SandDollar
           hash
         end
 
-        def authenticate!
-          @identity = SandDollar::AuthenticationService.authenticate_request!(request)
-        end
-
         def post_params
           params.require(:session).permit(:identification, :password)
-        end
-
-        def _identity
-          @identity ||= current_api_session_token.user_model_class.find_by_identification(_identification)
-        end
-
-        def _identification
-          post_params[:identification]
-        end
-
-        def _password
-          post_params[:password]
         end
 
       end

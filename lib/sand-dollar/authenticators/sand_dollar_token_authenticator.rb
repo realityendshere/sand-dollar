@@ -3,15 +3,15 @@
 
 class SandDollarTokenAuthenticator < SandDollar::Authenticators::Base
   def valid?
-    !(authorization_header.blank?)
+    !(authorization_header.blank?) && token_class
   end
 
   def authenticate!
     # TODO: Make this respect controller configuration for Token model
-    token = (APISessionToken.discover(authorization_header) || APISessionToken.dispense())
-    return false unless token.alive?
+    token = token_class.discover(authorization_header)
+    return false unless token && token.alive?
 
-    user = user_model_class.find(token.send(token.user_model_id_field)) rescue nil
+    user = user_class.find(token.send(token.user_model_id_field)) rescue nil
     user.nil? ? false : user
   end
 

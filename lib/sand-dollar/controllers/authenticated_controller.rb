@@ -4,11 +4,10 @@ module SandDollar
 
       def self.included(base)
         base.class_eval do
-          skip_before_action :verify_authenticity_token
           rescue_from SandDollar::NotAuthorized, with: :_not_authorized
           rescue_from SandDollar::AuthenticationFailed, with: :_authentication_failed
           rescue_from ActionController::ParameterMissing, with: :_parameter_missing
-          before_filter :api_session_token_authenticate!, :except => [:_authentication_failed]
+          before_filter :api_session_token_authenticate!, :except => [:_authentication_failed, :_not_authorized]
 
           base.extend ClassMethods
           base.include InstanceMethods
@@ -47,11 +46,13 @@ module SandDollar
         end
 
         def current_user
-          _current_user_model.find(_current_identification) rescue nil
+          @current_user ||= authenticate!
         end
 
         def api_session_token_authenticate!
-          raise SandDollar::NotAuthorized unless _authorization_header && current_api_session_token.alive?
+          unless authenticate!
+            raise SandDollar::NotAuthorized
+          end
           current_api_session_token.keep_alive
           nil
         end
@@ -65,6 +66,13 @@ module SandDollar
           self.class.session_class
         end
 
+        def authenticate!
+          @current_user = SandDollar::AuthenticationService.authenticate_request!({
+            request: request,
+            token_class: session_class
+          })
+        end
+
         def _authorization_header
           session_token = request.headers['Session-Token']
           session_token unless session_token.to_s.empty?
@@ -72,14 +80,6 @@ module SandDollar
 
         def _parameter_missing e
           _error e.to_s, 400
-        end
-
-        def _current_identification
-          current_api_session_token.send(current_api_session_token.user_model_id_field)
-        end
-
-        def _current_user_model
-          current_api_session_token.user_model_class
         end
 
         def _authentication_failed

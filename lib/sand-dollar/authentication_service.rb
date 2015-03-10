@@ -1,16 +1,15 @@
 module SandDollar::AuthenticationService
   module_function
 
-  def authenticate_request(request)
-    authenticators = [:sand_dollar_token, :sand_dollar_password]
+  def authenticate_request(options, authenticators = nil)
+    authenticators ||= [:sand_dollar_token, :sand_dollar_password]
 
-    authenticators.select {|key|
-      auth = SandDollar::Authenticators.load(key).new(request)
-      auth.valid?
-    }.map{|key|
-      auth = SandDollar::Authenticators.load(key).new(request)
-      identity = auth.authenticate!
-      identity.is_a?(SandDollar.configuration.user_model_class) ? identity : nil
+    authenticators.map{|key|
+      auth = SandDollar::Authenticators.load(key).new(options)
+      if auth.valid?
+        identity = auth.authenticate!
+        identity.is_a?(SandDollar.configuration.user_model_class) ? identity : nil
+      end
     }.compact.first
   end
 

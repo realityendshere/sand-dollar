@@ -9,7 +9,6 @@ class SandDollarPasswordAuthenticator < SandDollar::Authenticators::Base
 
   def authenticate!
     user = user_model_class.find_by_identification(identification)
-
     if user.nil? || user.password != season_password(password, user.password_salt)
       false
     else
