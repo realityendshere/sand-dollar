@@ -46,12 +46,11 @@ module SandDollar
         end
 
         def current_user
-          @current_user ||= authenticate!
+          @current_user ||= authenticate
         end
 
         def api_session_token_authenticate!
-          raise SandDollar::NotAuthorized unless authenticate!
-          current_api_session_token.keep_alive
+          current_api_session_token.keep_alive if authenticate!
           nil
         end
 
@@ -64,11 +63,15 @@ module SandDollar
           self.class.session_class
         end
 
-        def authenticate!
-          @current_user = SandDollar::AuthenticationService.authenticate_request!({
+        def authenticate
+          @current_user = SandDollar::AuthenticationService.authenticate_request({
             request: request,
             token_class: session_class
           })
+        end
+
+        def authenticate!
+          authenticate or raise SandDollar::NotAuthorized
         end
 
         def _authorization_header
@@ -85,16 +88,16 @@ module SandDollar
         end
 
         def _bad_request message = "Bad request"
-          _error message, 400
+          _error message.to_s, 400
         end
 
         def _not_authorized message = "Not Authorized"
           current_api_session_token.discard
-          _error message, 401
+          _error message.to_s, 401
         end
 
         def _not_found message = "Not Found"
-          _error message, 404
+          _error message.to_s, 404
         end
 
         def _error message, status

@@ -31,6 +31,10 @@ module SandDollar
 
         private
 
+        def authenticate!
+          authenticate or raise SandDollar::AuthenticationFailed
+        end
+
         def activate_current_api_session_token
           current_api_session_token.authenticated_as @current_user
         end
