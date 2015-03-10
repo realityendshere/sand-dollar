@@ -11,5 +11,7 @@ module SandDollar
 
     USER_MODEL = :user
 
+    AUTHENTICATORS = [:sand_dollar_token, :sand_dollar_password]
+
   end
 end

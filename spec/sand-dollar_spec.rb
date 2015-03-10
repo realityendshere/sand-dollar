@@ -208,6 +208,39 @@ describe SandDollar::Configuration do
 
     end
 
+    describe "default_authenticators" do
+      before do
+        SandDollar.configure do |config|
+          config.default_authenticators = default_authenticators
+        end
+      end
+
+      context "when provided an invalid array" do
+        let(:default_authenticators) {[]}
+
+        it "uses the provided authenticators" do
+          expect(SandDollar.configuration.default_authenticators).to match_array(SandDollar::Default::AUTHENTICATORS)
+        end
+      end
+
+      context "when provided a single authenticator" do
+        let(:default_authenticators) {'app_token'}
+
+        it "places the value into an array" do
+          expect(SandDollar.configuration.default_authenticators).to match_array(['app_token'])
+        end
+      end
+
+      context "when provided an array of authenticators" do
+        let(:default_authenticators) {[:app_token, :ldap]}
+
+        it "uses the provided configuration" do
+          expect(SandDollar.configuration.default_authenticators).to match_array(default_authenticators)
+        end
+      end
+
+    end
+
   end
 
 end

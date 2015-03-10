@@ -3,7 +3,8 @@ module SandDollar
     attr_reader :session_lifetime,
                 :token_length,
                 :storage,
-                :user_model
+                :user_model,
+                :default_authenticators
 
     def initialize
       # Number of seconds of inactivity a session will survive
@@ -17,6 +18,9 @@ module SandDollar
 
       # Name of Model to represent authenticatable users
       self.user_model = SandDollar::Default::USER_MODEL
+
+      # Array of authenticators to try
+      self.default_authenticators = SandDollar::Default::AUTHENTICATORS
     end
 
     def session_lifetime=(int)
@@ -70,6 +74,17 @@ module SandDollar
       end
 
       @user_model = cleaned.to_sym
+    end
+
+    def default_authenticators=(value)
+      value = [value].flatten
+
+      unless value.is_a?(Array) && value.count > 0
+        warn "SandDollar default_authenticators must be an array with more than 0 members. Using current value: #{@default_authenticators}"
+        return
+      end
+
+      @default_authenticators = value
     end
 
     def user_model_class
