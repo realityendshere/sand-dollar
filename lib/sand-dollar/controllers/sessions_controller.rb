@@ -16,7 +16,7 @@ module SandDollar
       module InstanceMethods
 
         def create
-          session_start
+          activate_current_api_session_token if post_params && authenticate!
           render request.format.to_sym => {session: session_token_hash}, :status => 201
         end
 
@@ -31,10 +31,8 @@ module SandDollar
 
         private
 
-        def session_start
-          if post_params && authenticate!
-            current_api_session_token.authenticated_as @current_user
-          end
+        def activate_current_api_session_token
+          current_api_session_token.authenticated_as @current_user
         end
 
         def session_token_hash

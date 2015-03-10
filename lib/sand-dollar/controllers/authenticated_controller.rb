@@ -50,9 +50,7 @@ module SandDollar
         end
 
         def api_session_token_authenticate!
-          unless authenticate!
-            raise SandDollar::NotAuthorized
-          end
+          raise SandDollar::NotAuthorized unless authenticate!
           current_api_session_token.keep_alive
           nil
         end
