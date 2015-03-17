@@ -17,7 +17,7 @@ class SandDollarPasswordAuthenticator < SandDollar::Authenticators::Base
   end
 
   def post_params
-    request.params.fetch('session') rescue {}
+    request.params.fetch('session', {})
   end
 
   def identification
