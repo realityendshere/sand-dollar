@@ -1,6 +1,18 @@
 # Sand::Dollar
 
-TODO: Write a gem description
+## Beware all who enter here!
+
+This is work in progress and experimental.
+
+## Okay, what is it?
+
+A really simple authentication gem for protecting APIs driven by Rails.
+
+Basically, there are several popular authentication gems out in the world. Most do way more than is necessary to authenticate an API. Or, don't do enough to address developer ergonomics.
+
+This gem is my (still very incomplete) attempt to offer authentication that is easy to use with a Rails API.
+
+# Everything below this line was auto-generated and probably doesn't work yet
 
 ## Installation
 
